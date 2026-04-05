@@ -1,0 +1,29 @@
+<div id="{{ css_id }}-alert"></div>
+<div data-signals="{ {{ css_id }}_cache_key: '{{ cache_key }}', {{ css_id }}_target: '{{ css_id }}-body', {{ css_id }}_n_pages: 1, {{ css_id}}_page_size: {{ page_size }}, is_ctrl_pressed: false }" data-on:keydown__window="$is_ctrl_pressed = true;" data-on:keyup__window="$is_ctrl_pressed = false;"></div>
+<table id="{{ css_id }}" class="table table-hover table-striped w-100">
+    <thead class="sticky-top">
+        <tr class="text-center bg-primary text-white">
+            {% for column in data.columns %}
+            <th scope="col" data-on:click="${{ css_id }}_last_sort='{{ column }}'; $prefix='{{ css_id }}'; @get('{% url 'ds_sort_table' %}', {filterSignals: {include: /(^{{ css_id }})|(^is_ctrl_pressed$)|^prefix$/}})">{{ column }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody id="{{ css_id }}-body">
+        {% for _, row in data.iterrows %}
+        <tr>
+            {% for cell in row %}
+            <td>{{ cell }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% if page_size > 0 %}
+<div id="{{ css_id }}-pagination-container">
+    {% if pagination_interface == "infinite_scroll" %}
+    <div id="{{ css_id }}-load-more" style="height: 1px;" data-on-intersect="$prefix='{{ css_id }}'; @get('{% url 'ds_load_table_rows' %}', {filterSignals: {include: /(^{{ css_id }})|(^is_ctrl_pressed$)|^prefix$/}})"></div>
+    {% else %}
+    <button id="{{ css_id }}-load-more" class="btn btn-primary w-100 my-2" data-on:click="$prefix='{{ css_id }}'; @get('{% url 'ds_load_table_rows' %}', {filterSignals: {include: /(^{{ css_id }})|(^is_ctrl_pressed$)|^prefix$/}})">Load More Data</button>
+    {% endif %}
+</div>
+{% endif %}

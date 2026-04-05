@@ -1,0 +1,34 @@
+<div data-signals="{ {{ element_id }}_cache_key: '{{ cache_key }}', is_ctrl_pressed: false }" data-on:keydown__window="$is_ctrl_pressed = true;" data-on:keyup__window="$is_ctrl_pressed = false;"></div>
+<table id="{{ element_id }}" class="table table-hover table-striped w-100">
+    <thead class="sticky-top">
+        <tr class="text-center bg-primary text-white">
+            {% for column in data.columns %}
+            <th scope="col" style="cursor: pointer;" data-on:click="$target='{{ cache_key }}'; $last_sort='{{ column }}'; @get('{% url 'ds_sort_table' %}')">{{ column }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody id="{{ element_id }}-body">
+        {% if data.empty %}
+        <tr>
+            <td colspan="{{ data.columns|length|default:'1' }}" class="text-center">No data was returned</td>
+        </tr>
+        {% else %}
+            {% for _, row in data.iterrows %}
+            <tr>
+                {% for cell in row %}
+                <td>{{ cell }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        {% endif %}
+    </tbody>
+</table>
+{% if page_size > 0 and not data.empty %}
+<div id="{{ element_id }}-pagination-container">
+    {% if pagination_interface == "infinite_scroll" %}
+    <div id="{{ element_id }}-load-more" style="height: 1px;" data-on-intersect="$target='{{ cache_key }}'; @get('{% url 'ds_load_table_rows' %}')"></div>
+    {% else %}
+    <button id="{{ element_id }}-load-more" class="btn btn-primary w-100 my-2" data-on:click="$target='{{ cache_key }}'; @get('{% url 'ds_load_table_rows' %}')">Load More Data</button>
+    {% endif %}
+</div>
+{% endif %}

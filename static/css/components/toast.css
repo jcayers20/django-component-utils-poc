@@ -1,0 +1,141 @@
+@keyframes toast-progress {
+    from {
+        width: 100%;
+    }
+
+    to {
+        width: 0%;
+    }
+}
+
+/* Per-variant color tokens */
+.toast-primary {
+    --toast-variant-color: var(--bs-primary);
+    --toast-variant-text: var(--bs-light);
+}
+
+.toast-secondary {
+    --toast-variant-color: var(--bs-secondary);
+    --toast-variant-text: var(--bs-light);
+}
+
+.toast-success {
+    --toast-variant-color: var(--bs-success);
+    --toast-variant-text: var(--bs-light);
+}
+
+.toast-danger {
+    --toast-variant-color: var(--bs-danger);
+    --toast-variant-text: var(--bs-light);
+}
+
+.toast-warning {
+    --toast-variant-color: var(--bs-warning);
+    --toast-variant-text: var(--bs-dark);
+}
+
+.toast-info {
+    --toast-variant-color: var(--bs-info);
+    --toast-variant-text: var(--bs-dark);
+}
+
+.toast-light {
+    --toast-variant-color: var(--bs-light);
+    --toast-variant-text: var(--bs-dark);
+}
+
+.toast-dark {
+    --toast-variant-color: var(--bs-dark);
+    --toast-variant-text: var(--bs-light);
+}
+
+.toast {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0 !important;
+    border: 1px solid var(--toast-variant-color, var(--bs-secondary)) !important;
+    background-color: var(--bs-light) !important;
+}
+
+.toast-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: var(--toast-variant-color, var(--bs-secondary)) !important;
+    color: var(--toast-variant-text, var(--bs-light)) !important;
+    border-bottom: 0 !important;
+    margin: -0.5rem -0.75rem 0.75rem;
+    padding: 0.75rem 1rem;
+    padding-right: 2.75rem;
+}
+
+.toast-header .material-symbols-outlined,
+.toast-header .toast-heading {
+    color: inherit;
+}
+
+.toast-body {
+    color: var(--bs-body-color);
+}
+
+/* Custom close button */
+.toast-close {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    line-height: 1;
+    opacity: 0.75;
+}
+
+.toast-close:hover {
+    opacity: 1;
+}
+
+/* Close button inside the header */
+.toast-header .toast-close {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin: 0;
+    padding: 0;
+    font-size: 1.25rem;
+    color: var(--toast-variant-text, var(--bs-light));
+}
+
+/* Close button when there is no header */
+.toast>.toast-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    padding: 0.75rem 1rem;
+    color: var(--toast-variant-color, var(--bs-secondary));
+}
+
+.toast:has(> .toast-close) {
+    padding-right: 3rem;
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    background-color: var(--toast-variant-color, var(--bs-secondary));
+    width: 100%;
+    animation-name: toast-progress;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+/* Pause animation on hover */
+.toast:hover .toast-progress {
+    animation-play-state: paused;
+}

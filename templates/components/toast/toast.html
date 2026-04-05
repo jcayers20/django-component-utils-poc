@@ -1,0 +1,33 @@
+{% load static %}
+<div class="toast {% if variant %}toast-{{ variant }}{% endif %}" role="alert" aria-live="assertive" aria-atomic="true" {% if css_id %}id="{{ css_id }}"{% endif %} {% for key, value in attributes.items %}{{ key }}="{{ value }}" {% endfor %}>
+    {% if title %}
+    <div class="toast-header">
+        {% if icon %}
+        <span class="material-symbols-outlined me-2">{{ icon }}</span>
+        {% endif %}
+        <strong class="toast-heading mb-0">{{ title }}</strong>
+        {% if dismissible %}
+        <button type="button" class="toast-close" data-bs-dismiss="toast" aria-label="Close">&times;</button>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if icon and not title %}
+    <div class="toast-body d-flex align-items-center">
+        <span class="material-symbols-outlined me-3">{{ icon }}</span>
+        <div>{{ text|safe }}</div>
+    </div>
+    {% else %}
+    <div class="toast-body">
+        {{ text|safe }}
+    </div>
+    {% endif %}
+
+    {% if dismissible and not title %}
+    <button type="button" class="toast-close" data-bs-dismiss="toast" aria-label="Close">&times;</button>
+    {% endif %}
+
+    {% if auto_dismiss %}
+    <div class="toast-progress" style="animation-duration: {{ delay_ms }}ms;"></div>
+    {% endif %}
+</div>

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Click-To-Load Example</h1>
+<div class="w-75 border" style="height: 500px; overflow-y: auto;">
+    {{ table_1_html|safe }}
+</div>
+
+<h1 class="mt-5">Infinite Scroll Example</h1>
+<div class="w-75 border" style="height: 500px; overflow-y: auto;">
+    {{ table_2_html|safe }}
+</div>
+
+{% endblock %}

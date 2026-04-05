@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="text-center mb-3 text-light">Alert Generator</h1>
+
+    <!-- Alert container -->
+    <div id="alert-demo" class="mb-3"></div>
+
+    <div class="container text-dark w-50">
+        
+        <div class="mb-3">
+            <label class="form-label">Variant</label>
+            <select class="form-select" data-bind="variant">
+                <option value="primary">Primary</option>
+                <option value="secondary">Secondary</option>
+                <option value="success">Success</option>
+                <option value="danger">Danger</option>
+                <option value="error">Error</option>
+                <option value="warning">Warning</option>
+                <option value="info">Info</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-control" data-bind="title">
+        </div>
+
+        <div class="mb-3" data-show="!['success', 'danger', 'error', 'warning', 'info'].includes($variant)">
+            <label class="form-label">Icon (optional)</label>
+            <input
+                type="text"
+                class="form-control"
+                data-bind="icon"
+                placeholder="e.g. hot_tub, star, sentiment_very_satisfied"
+            >
+            <small class="text-muted">Use Material Icon name. Leave blank to show no icon.</small>
+        </div>
+
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="dismissibleCheck" data-bind="dismissible">
+            <label class="form-check-label" for="dismissibleCheck">Dismissible</label>
+        </div>
+
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="autoDismissCheck" data-bind="auto_dismiss">
+            <label class="form-check-label" for="autoDismissCheck">Auto Dismiss</label>
+        </div>
+
+        <div class="mb-3" data-show="$auto_dismiss">
+            <label class="form-label">Delay (seconds)</label>
+            <input type="number" class="form-control" data-bind="delay" value="5">
+        </div>
+
+        <button class="btn btn-primary" data-on:click="@get('{% url 'ds_show_alert' %}')">Show Alert</button>
+
+    </div>
+
+{% endblock %}
