@@ -12,6 +12,7 @@ dependencies = [
     "polars>=1.38.1",
     "psycopg>=3.3.2",
     "psycopg2>=2.9.11",
+    "python-dotenv>=1.2.2",
 ]
 
 [dependency-groups]

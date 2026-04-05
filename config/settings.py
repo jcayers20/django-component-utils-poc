@@ -11,9 +11,25 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from a .env file in the project root if present.
+dotenv_path = BASE_DIR / ".env"
+load_dotenv(dotenv_path)
+
+# Use SQLite if DATABASE_ENGINE is not configured.
+database_engine = os.environ.get("DATABASE_ENGINE")
+if not database_engine:
+    database_engine = "django.db.backends.sqlite3"
+    database_name = os.environ.get(
+        "DATABASE_NAME", str(BASE_DIR / "db.sqlite3")
+    )
+else:
+    database_name = os.environ.get("DATABASE_NAME", "component_examples_db")
 
 
 # Quick-start development settings - unsuitable for production
@@ -78,12 +94,12 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "component_examples_db",
-        "USER": "component_examples_user",
-        "PASSWORD": "password",
-        "HOST": "localhost",
-        "PORT": "5433",
+        "ENGINE": database_engine,
+        "NAME": database_name,
+        "USER": os.environ.get("DATABASE_USER", "component_examples_user"),
+        "PASSWORD": os.environ.get("DATABASE_PASSWORD", "password"),
+        "HOST": os.environ.get("DATABASE_HOST", "localhost"),
+        "PORT": os.environ.get("DATABASE_PORT", "5432"),
     }
 }
 
