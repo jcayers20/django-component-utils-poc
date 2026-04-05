@@ -1,0 +1,29 @@
+<div class="nav-wrapper position-relative end-0">
+    <ul class="nav nav-{{ style }} pb-3 border-bottom border-1 bg-transparent" id="{{ css_id }}-headers" role="tablist">
+        {% for title, content, id, icon, active in tab_data %}
+            <li class="nav-item" role="presentation">
+                <a  id="{{ id }}-title"
+                    class="nav-link {% if active %}active{% endif %}"
+                    data-bs-toggle="tab"
+                    href="#{{ id }}-content"
+                    role="tab"
+                    aria-controls="{{ id }}-content"
+                    aria-selected="{% if active %}true{% else %}false{% endif %}">
+                    {% if icon %}
+                        <span class="material-symbols-outlined align-middle mb-1">{{ icon }}</span>
+                    {% endif %}
+                    {{ title }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+    <div class="tab-content" id="{{ css_id }}-content">
+        {% for title, content, id, icon, active in tab_data %}
+            <div id="{{ id }}-content"
+                 class="tab-pane {% if active %}show active{% endif %}"
+                 role="tabpanel" aria-labelledby="{{ id }}-title">
+                {{ content|safe }}
+            </div>
+        {% endfor %}
+    </div>
+</div>

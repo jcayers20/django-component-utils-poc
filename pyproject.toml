@@ -9,6 +9,7 @@ dependencies = [
     "django>=6.0.2",
     "lorem-text>=3.0",
     "pandas[excel]==2.3.3",
+    "plotly>=6.6.0",
     "polars>=1.38.1",
     "psycopg>=3.3.2",
     "psycopg2>=2.9.11",
