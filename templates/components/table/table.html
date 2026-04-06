@@ -1,5 +1,5 @@
 <div id="{{ css_id }}-alert"></div>
-<div data-signals="{ {{ css_id }}_cache_key: '{{ cache_key }}', {{ css_id }}_target: '{{ css_id }}-body', {{ css_id }}_n_pages: 1, {{ css_id}}_page_size: {{ page_size }}, is_ctrl_pressed: false }" data-on:keydown__window="$is_ctrl_pressed = true;" data-on:keyup__window="$is_ctrl_pressed = false;"></div>
+<div data-signals="{ '{{ css_id }}_cache_key': '{{ cache_key }}', '{{ css_id }}_target': '{{ css_id }}-body', '{{ css_id }}_n_pages': 1, '{{ css_id }}_page_size': {{ page_size }}, is_ctrl_pressed: false }" data-on:keydown__window="$is_ctrl_pressed = true;" data-on:keyup__window="$is_ctrl_pressed = false;"></div>
 <table id="{{ css_id }}" class="table table-hover table-striped w-100">
     <thead class="sticky-top">
         <tr class="text-center bg-primary text-white">

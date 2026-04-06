@@ -78,7 +78,7 @@ def tabs_view(request):
         request=request,
         data=full_data,
         css_id="tabs-table",
-        page_size=26,
+        page_size=10,
         pagination_interface="click_to_load",
     )
 
