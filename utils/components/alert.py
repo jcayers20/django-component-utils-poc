@@ -15,6 +15,10 @@ class Alert:
     delay: float = 5.0  # provide in seconds
     attributes: dict[str, str] | None = None
 
+    def to_html(self) -> str:
+        context = {"alert": self}
+        return render_to_string("components/alert/alert.html", context)
+
 
 def create_alert(
     text: str,
@@ -82,7 +86,7 @@ def create_alert(
         attributes["data-input-autodismiss"] = "true"
         attributes["data-input-delay-ms"] = str(int(delay * 1000))
 
-    # create the alert HTML
+    # create the alert
     alert = Alert(
         text=text,
         css_id=css_id,
@@ -92,13 +96,9 @@ def create_alert(
         footer=footer,
         dismissible=dismissible,
         auto_dismiss=auto_dismiss,
-        delay=delay * 1000,
+        delay=int(delay * 1000),
         attributes=attributes,
     )
-    print(alert)
 
-    if as_html:
-        context = {"alert": alert}
-        return render_to_string("components/alert/alert.html", context)
-    else:
-        return alert
+    # return the alert in the desired format
+    return alert.to_html() if as_html else alert
