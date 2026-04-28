@@ -52,6 +52,9 @@ def create_alert(
         The rendered HTML string if `as_html` is True, otherwise an Alert object.
     """
 
+    # cast variant to lower-case for consistency
+    variant = variant.lower()
+
     # "error" is an alias for "danger"
     variant = "danger" if variant == "error" else variant
 
