@@ -46,6 +46,7 @@ def show_alert(request):
         delay=delay,
         footer=footer,
         css_id=css_id,
+        as_html=True,
     )
 
     response = ServerSentEventGenerator.patch_elements(

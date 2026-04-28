@@ -1,32 +1,32 @@
 {% load static %}
-<div class="alert alert-{{ variant|default:'primary' }} mx-2 {% if dismissible %}fade show{% endif %}" role="alert" {% if css_id %}id="{{ css_id }}"{% endif %} {% for key, value in attributes.items %}{{ key }}="{{ value }}" {% endfor %}>
-    {% if title %}
+<div class="alert alert-{{ alert.variant|default:'primary' }} mx-2 {% if alert.dismissible %}fade show{% endif %}" role="alert" {% if alert.css_id %}id="{{ alert.css_id }}"{% endif %} {% for key, value in alert.attributes.items %}{{ key }}="{{ value }}" {% endfor %}>
+    {% if alert.title %}
     <div class="alert-header d-flex align-items-center">
-        {% if icon %}<span class="material-symbols-outlined me-3">{{ icon }}</span>{% endif %}
-        <h5 class="alert-heading mb-0 flex-grow-1">{{ title }}</h5>
-        {% if dismissible %}<button type="button" class="alert-close" data-bs-dismiss="alert" aria-label="Close">&times;</button>{% endif %}
+        {% if alert.icon %}<span class="material-symbols-outlined me-3">{{ alert.icon }}</span>{% endif %}
+        <h5 class="alert-heading mb-0 flex-grow-1">{{ alert.title }}</h5>
+        {% if alert.dismissible %}<button type="button" class="alert-close" data-bs-dismiss="alert" aria-label="Close">&times;</button>{% endif %}
     </div>
     {% endif %}
 
-    {% if icon and not title %}
+    {% if alert.icon and not alert.title %}
     <div class="d-flex align-items-center">
-        <span class="material-symbols-outlined me-3">{{ icon }}</span>
-        <div>{{ text|safe }}</div>
+        <span class="material-symbols-outlined me-3">{{ alert.icon }}</span>
+        <div>{{ alert.text|safe }}</div>
     </div>
     {% else %}
-    {{ text|safe }}
+    {{ alert.text|safe }}
     {% endif %}
 
-    {% if footer %}
-    <hr class="text-{{ variant }}">
-    <p class="mb-0 alert-footer">{{ footer|safe }}</p>
+    {% if alert.footer %}
+    <hr class="text-{{ alert.variant }}">
+    <p class="mb-0 alert-footer">{{ alert.footer|safe }}</p>
     {% endif %}
 
-    {% if dismissible and not title %}
+    {% if alert.dismissible and not alert.title %}
     <button type="button" class="alert-close" data-bs-dismiss="alert" aria-label="Close">&times;</button>
     {% endif %}
 
-    {% if auto_dismiss %}
-    <div class="alert-progress bg-{{ variant }}" style="animation-duration: {{ delay_ms }}ms;"></div>
+    {% if alert.auto_dismiss %}
+    <div class="alert-progress bg-{{ alert.variant }}" style="animation-duration: {{ alert.delay }}ms;"></div>
     {% endif %}
 </div>

@@ -1,4 +1,19 @@
 from django.template.loader import render_to_string
+from pydantic.dataclasses import dataclass
+
+
+@dataclass
+class Alert:
+    text: str
+    css_id: str | None = None
+    variant: str = "primary"
+    title: str | None = None
+    icon: str | None = None
+    footer: str | None = None
+    dismissible: bool = True
+    auto_dismiss: bool = False
+    delay: float = 5.0  # provide in seconds
+    attributes: dict[str, str] | None = None
 
 
 def create_alert(
@@ -11,8 +26,9 @@ def create_alert(
     dismissible: bool = True,
     auto_dismiss: bool = False,
     delay: float = 5.0,
+    as_html: bool = False,
     **kwargs,
-) -> str:
+) -> str | Alert:
     """
     Render a Bootstrap 5 Alert component.
 
@@ -29,7 +45,7 @@ def create_alert(
         **kwargs: Additional HTML attributes to add to the alert element.
 
     Returns:
-        The rendered HTML string.
+        The rendered HTML string if `as_html` is True, otherwise an Alert object.
     """
 
     # "error" is an alias for "danger"
@@ -67,16 +83,22 @@ def create_alert(
         attributes["data-input-delay-ms"] = str(int(delay * 1000))
 
     # create the alert HTML
-    context = {
-        "text": text,
-        "variant": variant,
-        "title": title,
-        "icon": icon,
-        "footer": footer,
-        "dismissible": dismissible,
-        "css_id": css_id,
-        "attributes": attributes,
-        "auto_dismiss": auto_dismiss,
-        "delay_ms": int(delay * 1000),
-    }
-    return render_to_string("components/alert/alert.html", context)
+    alert = Alert(
+        text=text,
+        css_id=css_id,
+        variant=variant,
+        title=title,
+        icon=icon,
+        footer=footer,
+        dismissible=dismissible,
+        auto_dismiss=auto_dismiss,
+        delay=delay * 1000,
+        attributes=attributes,
+    )
+    print(alert)
+
+    if as_html:
+        context = {"alert": alert}
+        return render_to_string("components/alert/alert.html", context)
+    else:
+        return alert
