@@ -32,6 +32,7 @@
                                 <li><a class="dropdown-item" href="{% url 'toast' %}">Toasts</a></li>
                                 <li><a class="dropdown-item" href="{% url 'table' %}">Table</a></li>
                                 <li><a class="dropdown-item" href="{% url 'tabs' %}">Tabs</a></li>
+                                <li><a class="dropdown-item" href="{% url 'bar_chart' %}">Bar Chart</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -71,13 +72,19 @@
         <!-- Toast Container -->
         <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
         <!-- Datastar -->
         {% comment %} <script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@1.0.0-RC.7/bundles/datastar.js"></script> {% endcomment %}
         <script type="module" src="{% static 'js/datastar.js' %}"></script>
         <!-- Bootstrap Bundle with Popper -->
         <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+        <!-- Component JS -->
         <script src="{% static 'js/components/tabs.js' %}"></script>
         <script src="{% static 'js/components/toast.js' %}"></script>
         <script src="{% static 'js/components/alert.js' %}"></script>
+        <script src="{% static 'js/components/chart.js' %}"></script>
     </body>
 </html>

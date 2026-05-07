@@ -1,0 +1,4 @@
+<div>
+    <canvas class="chart-canvas" id="{{ chart.css_id }}"></canvas>
+</div>
+{{ chart.to_dict|json_script:chart.script_id }}

@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.express as px
 
 from utils.components import alert, table, tabs
+from utils.components.charts import bar
 
 # Create your views here.
 
@@ -122,3 +123,53 @@ def tabs_view(request):
     )
     context = {"tabs_html": tabs_html}
     return render(request, "show_tabs.html", context)
+
+
+def bar_chart_view(request):
+    # create a bar chart using the BarChart component
+    data_1 = pd.DataFrame(
+        {
+            "Category": ["A", "B", "C", "D", "E"],
+            "Value 1": [10, 15, 7, 12, 20],
+            "Value 2": [8, 12, 5, 10, 18],
+            "Value 3": [5, 10, 3, 9, 6],
+        }
+    )
+    chart_1 = bar.create_bar_chart(
+        data=data_1,
+        css_id="chart1",
+        label_col="Category",
+        value_col=["Value 1", "Value 2", "Value 3"],
+        value_labels=["V1", "V2", "V3"],
+        orientation="horizontal",
+        title="Stacked Bar Chart Example",
+        # title_position="top",
+        # title_alignment="center",
+        show_legend=True,
+        # legend_position="bottom",
+        # legend_alignment="center",
+        palette="pastel",
+    )
+
+    data_2 = pd.DataFrame(
+        {
+            "Category": ["F", "G", "H", "I", "J"],
+            "Value 1": [14, 9, 11, 6, 13],
+            "Value 2": [10, 7, 9, 4, 12],
+            "Value 3": [6, 5, 8, 3, 7],
+        }
+    )
+    chart_2 = bar.create_bar_chart(
+        data=data_2,
+        css_id="chart2",
+        label_col="Category",
+        value_col=["Value 1", "Value 2", "Value 3"],
+        value_labels=["V1", "V2", "V3"],
+        orientation="vertical",
+        title="Stacked Bar Chart Example 2",
+        show_legend=True,
+        palette="muted",
+    )
+
+    context = {"chart_1": chart_1, "chart_2": chart_2}
+    return render(request, "show_chart.html", context)

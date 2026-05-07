@@ -9,6 +9,7 @@ base_patterns = [
     path("toast/", views.toast_view, name="toast"),
     path("table/", views.table_view, name="table"),
     path("tabs/", views.tabs_view, name="tabs"),
+    path("bar-chart/", views.bar_chart_view, name="bar_chart"),
 ]
 
 data_star_patterns = [
