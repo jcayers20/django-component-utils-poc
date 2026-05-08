@@ -1,29 +1,48 @@
 // function for handling chart download
 function downloadChartImage(chartInstance, chartId) {
-    let link = document.createElement('a');
-    link.download = chartId + '.png';
+    const link = document.createElement('a');
+    link.download = `${chartId}.png`;
     link.href = chartInstance.toBase64Image();
     link.click();
 }
 
+function renderCharts() {
+    const chartCanvases = document.querySelectorAll('.chart-canvas');
 
-// for each element with class "chart-canvas", find the corresponding script tag with the chart data and render the chart
-charts = document.querySelectorAll('.chart-canvas');
-charts.forEach(chart => {
-    console.log('Found chart canvas:', chart.id);
-    let scriptId = chart.id + '-data';
-    let chartData = JSON.parse(document.getElementById(scriptId).textContent);
-    let ctx = chart.getContext('2d');
-    let chartInstance =new Chart(ctx, chartData);
+    chartCanvases.forEach((chart) => {
+        console.log('Found chart canvas:', chart.id);
 
-    // add event listener to download button
-    let downloadButton = document.getElementById(chart.id + '-download');
-    if (downloadButton) {
-        downloadButton.onclick = () => {
-            downloadChartImage(chartInstance, chart.id);
-        };
+        const scriptElement = document.getElementById(`${chart.id}-data`);
+        if (!scriptElement) {
+            console.warn(`Data script not found for chart: ${chart.id}`);
+            return;
+        }
 
-    } else {
-        alert('Download button not found for chart: ' + chart.id);
-    }
-});
+        let chartData;
+        try {
+            chartData = JSON.parse(scriptElement.textContent);
+        } catch (error) {
+            console.error(`Unable to parse chart data for ${chart.id}:`, error);
+            return;
+        }
+
+        const ctx = chart.getContext('2d');
+        if (!ctx) {
+            console.warn(`Canvas context not available for chart: ${chart.id}`);
+            return;
+        }
+
+        const chartInstance = new Chart(ctx, chartData);
+
+        const downloadButton = document.getElementById(`${chart.id}-download`);
+        if (downloadButton) {
+            downloadButton.addEventListener('click', () => {
+                downloadChartImage(chartInstance, chart.id);
+            });
+        } else {
+            console.warn(`Download button not found for chart: ${chart.id}`);
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', renderCharts);

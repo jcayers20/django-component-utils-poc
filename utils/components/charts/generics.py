@@ -1,5 +1,6 @@
 """Generic helpers for chart components."""
 
+from copy import deepcopy
 from typing import Literal
 
 from django.template.loader import render_to_string
@@ -26,10 +27,25 @@ class Chart:
         self.script_id = f"{self.css_id}-data"
 
         self.options = self.options or {}
+        self._validate_options()
+
+    def _validate_options(self) -> None:
+        if not isinstance(self.options, dict):
+            raise TypeError("options must be a dict")
+
+        if "plugins" in self.options and not isinstance(
+            self.options["plugins"], dict
+        ):
+            raise TypeError("options['plugins'] must be a dict")
+
+        if "scales" in self.options and not isinstance(
+            self.options["scales"], dict
+        ):
+            raise TypeError("options['scales'] must be a dict")
 
     def to_dict(self) -> dict:
         """Convert a Chart instance to a dictionary for use in Chart.js."""
-        options = self.options.copy() if self.options else {}
+        options = deep_merge_dicts(self.options, {})
 
         # configure chart title if provided
         if self.title:
@@ -41,10 +57,7 @@ class Chart:
                     "align": self.title_alignment,
                 }
             }
-            if "plugins" in options:
-                options["plugins"].update(title_config)
-            else:
-                options["plugins"] = title_config
+            options = deep_merge_dicts(options, {"plugins": title_config})
 
         # configure legend display and position
         if not self.show_legend:
@@ -57,10 +70,7 @@ class Chart:
                     "align": self.legend_alignment,
                 }
             }
-        if "plugins" in options:
-            options["plugins"].update(legend_config)
-        else:
-            options["plugins"] = legend_config
+        options = deep_merge_dicts(options, {"plugins": legend_config})
 
         return {"options": options}
 
@@ -68,3 +78,40 @@ class Chart:
         """Render the BarChart as an HTML string."""
         context = {"chart": self}
         return render_to_string("components/chart/chart.html", context)
+
+
+def deep_merge_dicts(
+    base: dict | None,
+    updates: dict | None = None,
+) -> dict:
+    """Recursively merge updates into a base dictionary.
+
+    Args:
+        base (dict | None): The dictionary to be updated.
+        updates (dict | None, optional): The updates to apply. Defaults to None.
+
+    Returns:
+        dict: The updated base dictionary
+    """
+    # short-circuit if base is None
+    if base is None:
+        return updates or {}
+
+    # short-circuit if no updates provided
+    if not updates:
+        return deepcopy(base)
+
+    result = deepcopy(base)
+
+    # apply updates recursively
+    for key, value in updates.items():
+        if (
+            key in result
+            and isinstance(result[key], dict)
+            and isinstance(value, dict)
+        ):
+            result[key] = deep_merge_dicts(result[key], value)
+        else:
+            result[key] = deepcopy(value)
+
+    return result

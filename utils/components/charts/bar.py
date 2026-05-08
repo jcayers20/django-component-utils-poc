@@ -3,12 +3,11 @@
 from typing import Literal
 
 import pandas as pd
-import seaborn as sns
 from pydantic.dataclasses import dataclass
 
 
-from .generics import Chart
-from .palettes import palettes
+from .generics import Chart, deep_merge_dicts
+from .palettes import resolve_palette_colors
 
 
 @dataclass(kw_only=True)
@@ -46,6 +45,29 @@ class BarChart(Chart):
     data: BarChartDataset | list[BarChartDataset]
     orientation: Literal["vertical", "horizontal"] = "vertical"
 
+    def __post_init__(self):
+        super().__post_init__()
+
+        if isinstance(self.data, BarChartDataset):
+            self.data = [self.data]
+
+        if not isinstance(self.data, list):
+            raise TypeError(
+                "data must be a BarChartDataset or a list of BarChartDataset instances"
+            )
+
+        if not self.labels:
+            raise ValueError("labels must contain at least one value")
+
+        if not self.data:
+            raise ValueError("data must contain at least one dataset")
+
+        for dataset in self.data:
+            if len(dataset.data) != len(self.labels):
+                raise ValueError(
+                    "Each dataset length must match the number of labels"
+                )
+
     def to_dict(self) -> dict:
         """Convert a BarChart instance to a dictionary for use in Chart.js."""
 
@@ -53,61 +75,53 @@ class BarChart(Chart):
 
         result.update({"type": "bar"})
 
-        # get palette colors
-        if self.palette in palettes:
-            palette_colors = palettes[self.palette]
-        else:
-            try:
-                palette_colors = sns.color_palette(
-                    self.palette,
-                    n_colors=10,
-                ).as_hex()
-            except ValueError:
-                print(
-                    f"Warning: Palette '{self.palette}' not found. Using default colors."
-                )
-                palette_colors = sns.color_palette("deep", n_colors=10).as_hex()
+        # get palette (default) colors
+        num_colors = max(10, len(self.data))
+        default_colors = resolve_palette_colors(
+            self.palette,
+            num_colors=num_colors,
+        )
+
         # apply default colors from palette if not specified in datasets
-        default_colors = palette_colors.copy() if palette_colors else []
         data_list = (
             [self.data] if isinstance(self.data, BarChartDataset) else self.data
         )
+        datasets = []
         for dataset in data_list:
-            if dataset.backgroundColor is None:
-                dataset.backgroundColor = (
+            # if dataset.backgroundColor is None:
+            #     dataset.backgroundColor = (
+            #         default_colors.pop(0) if default_colors else None
+            #     )
+            dataset_dict = dataset.to_dict()
+            if dataset_dict.get("backgroundColor") is None:
+                dataset_dict["backgroundColor"] = (
                     default_colors.pop(0) if default_colors else None
                 )
+            datasets.append(dataset_dict)
 
         # construct data dictionary for Chart.js
         data_dict = {
             "labels": self.labels,
-            "datasets": [self.data.to_dict()]
-            if isinstance(self.data, BarChartDataset)
-            else [d.to_dict() for d in self.data],
+            "datasets": datasets,
         }
+
         result["data"] = data_dict
 
-        options = self.options.copy() if self.options else {}
+        options = deep_merge_dicts(self.options, {})
 
         # apply horizontal orientation if specified
         if self.orientation == "horizontal":
-            options.update({"indexAxis": "y"})
+            options = deep_merge_dicts(options, {"indexAxis": "y"})
 
         # stack bars by default if not already configured in options
-        if "scales" not in options:
-            options["scales"] = {"y": {"stacked": True}, "x": {"stacked": True}}
-        else:
-            options["scales"].update(
-                {"y": {"stacked": True}, "x": {"stacked": True}}
-            )
+        options = deep_merge_dicts(
+            options,
+            {"scales": {"y": {"stacked": True}, "x": {"stacked": True}}},
+        )
 
-        result["options"].update(options)
+        result["options"] = deep_merge_dicts(result["options"], options)
 
         return result
-
-    def from_dataframe() -> "BarChart":
-        """Create a BarChart instance from a pandas DataFrame."""
-        raise NotImplementedError("This method is not yet implemented.")
 
 
 def create_bar_chart(
@@ -129,10 +143,22 @@ def create_bar_chart(
     """Create a BarChart instance from a pandas DataFrame."""
     if isinstance(value_col, str):
         value_col = [value_col]
+    elif not isinstance(value_col, list):
+        raise TypeError("value_col must be a string or a list of strings")
+
     if value_labels is None:
         value_labels = value_col
     elif isinstance(value_labels, str):
         value_labels = [value_labels]
+    elif not isinstance(value_labels, list):
+        raise TypeError("value_labels must be a string or a list of strings")
+
+    if len(value_labels) != len(value_col):
+        raise ValueError("value_labels must have the same length as value_col")
+
+    missing_columns = set([label_col] + value_col) - set(data.columns)
+    if missing_columns:
+        raise KeyError(f"Missing DataFrame columns: {sorted(missing_columns)}")
 
     datasets = []
     for col, label in zip(value_col, value_labels):
