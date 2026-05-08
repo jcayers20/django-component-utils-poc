@@ -1,4 +1,9 @@
+<div class="d-flex justify-content-end mb-2">
+    <button class="btn btn-outline-dark btn-sm" id="{{ chart.css_id }}-download">
+        <i class="material-symbols-outlined">download</i>
+    </button>
+</div>
 <div>
-    <canvas class="chart-canvas" id="{{ chart.css_id }}"></canvas>
+    <canvas class="chart-canvas w-100" id="{{ chart.css_id }}"></canvas>
 </div>
 {{ chart.to_dict|json_script:chart.script_id }}
