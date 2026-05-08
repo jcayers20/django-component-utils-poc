@@ -129,7 +129,7 @@ def bar_chart_view(request):
     # create a bar chart using the BarChart component
     data_1 = pd.DataFrame(
         {
-            "Category": ["A", "B", "C", "D", "E"],
+            "Category": ["MMLXC", "MMSXC", "MMSXC", "MMWEX", "MMMTG"],
             "Value 1": [10, 15, 7, 12, 20],
             "Value 2": [8, 12, 5, 10, 18],
             "Value 3": [5, 10, 3, 9, 6],
@@ -137,18 +137,11 @@ def bar_chart_view(request):
     )
     chart_1 = bar.create_bar_chart(
         data=data_1,
-        css_id="chart1",
         label_col="Category",
         value_col=["Value 1", "Value 2", "Value 3"],
-        value_labels=["V1", "V2", "V3"],
+        value_labels=["ADSD-N", "AME", "LAXB"],
         orientation="horizontal",
-        title="Stacked Bar Chart Example",
-        # title_position="top",
-        # title_alignment="center",
-        show_legend=True,
-        # legend_position="bottom",
-        # legend_alignment="center",
-        palette="pastel",
+        palette="tab10",
     )
 
     data_2 = pd.DataFrame(
