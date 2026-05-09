@@ -9,5 +9,9 @@ wheels/
 # Virtual environments
 .venv
 
+# AI-related
+**/prompts/
+**/generated/
+
 # Environment variables
 .env
