@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 
 from utils.components import alert, table, tabs
-from utils.components.charts import bar
+from utils.components.charts import bar, doughnut
 
 # Create your views here.
 
@@ -141,29 +141,14 @@ def bar_chart_view(request):
         value_col=["Value 1", "Value 2", "Value 3"],
         value_labels=["ADSD-N", "AME", "LAXB"],
         orientation="horizontal",
-        palette="muted",
+        palette="icefire",
     )
 
-    data_2 = pd.DataFrame(
-        {
-            "Category": ["F", "G", "H", "I", "J"],
-            "Value 1": [14, 3, 11, 6, 10],
-            "Value 2": [10, 7, 9, 4, 12],
-            "Value 3": [6, 5, 8, 3, 7],
-        }
-    )
-    chart_2 = bar.create_bar_chart(
-        data=data_2,
-        css_id="chart2",
-        label_col="Category",
-        # value_col=["Value 1"],
-        value_col=["Value 1", "Value 2", "Value 3"],
-        value_labels=["V1", "V2", "V3"],
-        # orientation="horizontal",
-        title="Bar Chart Example 2",
-        show_legend=True,
-        palette="deep",
-        barmode="group",
+    chart_2 = doughnut.create_doughnut_chart(
+        labels=["Class 1", "Class 2", "Class 3"],
+        data=[30, 45, 25],
+        title="Example Doughnut Chart",
+        palette="mako",
     )
 
     context = {"chart_1": chart_1, "chart_2": chart_2}

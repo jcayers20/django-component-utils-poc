@@ -1,9 +1,11 @@
-<div class="d-flex justify-content-end mb-2">
-    <button class="btn btn-outline-dark btn-sm" id="{{ chart.css_id }}-download">
-        <i class="material-symbols-outlined">download</i>
-    </button>
-</div>
-<div>
-    <canvas class="chart-canvas w-100" id="{{ chart.css_id }}"></canvas>
+<div class="d-flex flex-column h-100 w-100">
+    <div class="d-flex justify-content-end mb-2">
+        <button class="btn btn-outline-dark btn-sm" id="{{ chart.css_id }}-download">
+            <i class="material-symbols-outlined">download</i>
+        </button>
+    </div>
+    <div class="flex-grow-1" style="min-height: 0;">
+        <canvas class="chart-canvas w-100 h-100" id="{{ chart.css_id }}"></canvas>
+    </div>
 </div>
 {{ chart.to_dict|json_script:chart.script_id }}

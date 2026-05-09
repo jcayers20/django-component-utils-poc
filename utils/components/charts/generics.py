@@ -45,7 +45,10 @@ class Chart:
 
     def to_dict(self) -> dict:
         """Convert a Chart instance to a dictionary for use in Chart.js."""
-        options = deep_merge_dicts(self.options, {})
+        options = deep_merge_dicts(
+            {"responsive": True, "maintainAspectRatio": False},
+            self.options,
+        )
 
         # configure chart title if provided
         if self.title:

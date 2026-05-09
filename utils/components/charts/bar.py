@@ -77,10 +77,11 @@ class BarChart(Chart):
         result.update({"type": "bar"})
 
         # get palette (default) colors
-        num_colors = max(10, len(self.data))
+        num_colors = len(self.data) if isinstance(self.data, list) else 1
         default_colors = resolve_palette_colors(
             self.palette,
             num_colors=num_colors,
+            alpha=0.8,
         )
 
         # apply default colors from palette if not specified in datasets
