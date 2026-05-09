@@ -12,7 +12,7 @@ class DoughnutChart(Chart):
 
     labels: list[str]
     data: list
-    cutout: str | int = "50%"
+    cutout_size: str | int = "50%"
 
     def to_dict(self) -> dict:
         """Convert a DoughnutChart instance to a dictionary for use in Chart.js."""
@@ -30,7 +30,7 @@ class DoughnutChart(Chart):
             {
                 "type": "doughnut",
                 "data": {"labels": self.labels, "datasets": [dataset]},
-                "options": {"cutout": self.cutout},
+                "options": {"cutout": self.cutout_size},
             },
         )
 
@@ -38,6 +38,7 @@ class DoughnutChart(Chart):
 def create_doughnut_chart(
     labels: list[str],
     data: list,
+    cutout_size: str | int = "50%",
     title: str | None = None,
     palette: str = "deep",
     options: dict | None = None,
@@ -46,6 +47,7 @@ def create_doughnut_chart(
     return DoughnutChart(
         labels=labels,
         data=data,
+        cutout_size=cutout_size,
         title=title,
         palette=palette,
         options=options,
