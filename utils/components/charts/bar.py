@@ -44,6 +44,7 @@ class BarChart(Chart):
     labels: list[str]
     data: BarChartDataset | list[BarChartDataset]
     orientation: Literal["vertical", "horizontal"] = "vertical"
+    barmode: Literal["stack", "group", "relative"] = "stack"
 
     def __post_init__(self):
         super().__post_init__()
@@ -87,16 +88,29 @@ class BarChart(Chart):
             [self.data] if isinstance(self.data, BarChartDataset) else self.data
         )
         datasets = []
+
+        relative_totals = []
+        if self.barmode == "relative":
+            label_count = len(self.labels)
+            for i in range(label_count):
+                total = sum(dataset.data[i] for dataset in data_list)
+                relative_totals.append(total)
+
         for dataset in data_list:
-            # if dataset.backgroundColor is None:
-            #     dataset.backgroundColor = (
-            #         default_colors.pop(0) if default_colors else None
-            #     )
             dataset_dict = dataset.to_dict()
             if dataset_dict.get("backgroundColor") is None:
                 dataset_dict["backgroundColor"] = (
                     default_colors.pop(0) if default_colors else None
                 )
+
+            if self.barmode == "relative":
+                dataset_dict["data"] = [
+                    (value / total * 100) if total else 0
+                    for value, total in zip(
+                        dataset_dict["data"], relative_totals
+                    )
+                ]
+
             datasets.append(dataset_dict)
 
         # construct data dictionary for Chart.js
@@ -113,10 +127,41 @@ class BarChart(Chart):
         if self.orientation == "horizontal":
             options = deep_merge_dicts(options, {"indexAxis": "y"})
 
-        # stack bars by default if not already configured in options
+        # configure bar mode behavior
+        if self.barmode == "group":
+            scale_config = {
+                "scales": {"y": {"stacked": False}, "x": {"stacked": False}}
+            }
+        elif self.barmode == "relative":
+            value_axis = "x" if self.orientation == "horizontal" else "y"
+            scale_config = {
+                "scales": {
+                    "y": {"stacked": True},
+                    "x": {"stacked": True},
+                }
+            }
+            scale_config = deep_merge_dicts(
+                scale_config,
+                {"scales": {value_axis: {"min": 0, "max": 100}}},
+            )
+        else:
+            scale_config = {
+                "scales": {"y": {"stacked": True}, "x": {"stacked": True}}
+            }
+
+        options = deep_merge_dicts(options, scale_config)
+
+        # Add runtime-only hints that chart.js can use to inject JS callbacks.
         options = deep_merge_dicts(
             options,
-            {"scales": {"y": {"stacked": True}, "x": {"stacked": True}}},
+            {
+                "plugins": {
+                    "bar_chart_utils": {
+                        "barmode": self.barmode,
+                        "orientation": self.orientation,
+                    }
+                }
+            },
         )
 
         result["options"] = deep_merge_dicts(result["options"], options)
@@ -131,6 +176,7 @@ def create_bar_chart(
     css_id: str | None = None,
     value_labels: str | list[str] | None = None,
     orientation: Literal["vertical", "horizontal"] = "vertical",
+    barmode: Literal["stack", "group", "relative"] = "stack",
     title: str | None = None,
     title_position: Literal["top", "left", "bottom", "right"] = "top",
     title_alignment: Literal["start", "center", "end"] = "center",
@@ -173,6 +219,7 @@ def create_bar_chart(
         labels=data[label_col].tolist(),
         data=datasets,
         orientation=orientation,
+        barmode=barmode,
         title=title,
         title_position=title_position,
         title_alignment=title_alignment,

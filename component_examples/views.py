@@ -141,13 +141,13 @@ def bar_chart_view(request):
         value_col=["Value 1", "Value 2", "Value 3"],
         value_labels=["ADSD-N", "AME", "LAXB"],
         orientation="horizontal",
-        palette="tab10",
+        palette="muted",
     )
 
     data_2 = pd.DataFrame(
         {
             "Category": ["F", "G", "H", "I", "J"],
-            "Value 1": [14, 9, 11, 6, 13],
+            "Value 1": [14, 3, 11, 6, 10],
             "Value 2": [10, 7, 9, 4, 12],
             "Value 3": [6, 5, 8, 3, 7],
         }
@@ -156,12 +156,14 @@ def bar_chart_view(request):
         data=data_2,
         css_id="chart2",
         label_col="Category",
+        # value_col=["Value 1"],
         value_col=["Value 1", "Value 2", "Value 3"],
         value_labels=["V1", "V2", "V3"],
-        orientation="vertical",
-        title="Stacked Bar Chart Example 2",
+        # orientation="horizontal",
+        title="Bar Chart Example 2",
         show_legend=True,
-        palette="muted",
+        palette="deep",
+        barmode="group",
     )
 
     context = {"chart_1": chart_1, "chart_2": chart_2}
