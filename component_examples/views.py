@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 
 from utils.components import alert, table, tabs
-from utils.components.charts import bar, doughnut
+from utils.components.charts import bar, pie
 
 # Create your views here.
 
@@ -144,10 +144,10 @@ def bar_chart_view(request):
         palette="icefire",
     )
 
-    chart_2 = doughnut.create_doughnut_chart(
+    chart_2 = pie.create_pie_chart(
         labels=["Class 1", "Class 2", "Class 3"],
         data=[30, 45, 25],
-        title="Example Doughnut Chart",
+        title="Example Pie Chart",
         palette="mako",
     )
 
