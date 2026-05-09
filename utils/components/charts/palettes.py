@@ -1,10 +1,12 @@
 """Custom color palettes to be used in charts."""
 
+import re
+
 import seaborn as sns
 
 
 custom_palettes = {
-    "cat": ["#f3c911", "#000000", "#89F336", "#888888"],
+    "cat": ["#f3c911", "#000000", "#888888", "#e41a1c"],
 }
 
 
@@ -39,13 +41,27 @@ def resolve_palette_colors(
         return []
 
 
+def _validate_hex_color(hex_color: str) -> None:
+    """Validate that a string is a valid hex color code."""
+
+    if not isinstance(hex_color, str):
+        raise TypeError("Hex codes must be strings")
+
+    hex_pattern = re.compile(r"^#?([A-Fa-f0-9]{6})$")
+    if not hex_pattern.match(hex_color):
+        raise ValueError(
+            f"Invalid hex color code: {hex_color}. Must be in format #RRGGBB"
+        )
+
+
 def hex_to_rgba(
     hex_color: str,
     alpha: float = 1.0,
 ) -> str:
     """Convert a hex color string to an RGBA string with the given alpha."""
+    _validate_hex_color(hex_color=hex_color)
     hex_color = hex_color.lstrip("#")
     if len(hex_color) != 6:
         raise ValueError("hex_color must be in the format #RRGGBB")
-    r, g, b = (int(hex_color[i : i + 2], 16) for i in (0, 2, 4))  # type: ignore
+    r, g, b = (int(hex_color[i : i + 2], base=16) for i in (0, 2, 4))  # type: ignore
     return f"rgba({r}, {g}, {b}, {alpha})"
