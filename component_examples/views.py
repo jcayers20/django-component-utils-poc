@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 
 from utils.components import alert, table, tabs
-from utils.components.charts import bar, pie
+from utils.components.charts import bar, doughnut, pie
 
 # Create your views here.
 
@@ -151,5 +151,12 @@ def bar_chart_view(request):
         palette="mako",
     )
 
-    context = {"chart_1": chart_1, "chart_2": chart_2}
+    chart_3 = doughnut.create_doughnut_chart(
+        labels=["Segment A", "Segment B", "Segment C"],
+        data=[40, 35, 25],
+        title="Example Doughnut Chart",
+        palette="rocket",
+    )
+
+    context = {"chart_1": chart_1, "chart_2": chart_2, "chart_3": chart_3}
     return render(request, "show_chart.html", context)
