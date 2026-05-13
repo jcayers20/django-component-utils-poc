@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 
 from utils.components import alert, table, tabs
-from utils.components.charts import bar, doughnut, pie
+from utils.components.charts import bar, doughnut, pie, waterfall
 
 # Create your views here.
 
@@ -138,25 +138,40 @@ def bar_chart_view(request):
     chart_1 = bar.create_bar_chart(
         data=data_1,
         label_col="Category",
-        value_col=["Value 1", "Value 2", "Value 3"],
+        value_cols=["Value 1", "Value 2", "Value 3"],
         value_labels=["ADSD-N", "AME", "LAXB"],
         orientation="horizontal",
+        title="Example Bar Chart",
         palette="icefire",
     )
 
     chart_2 = pie.create_pie_chart(
         labels=["Class 1", "Class 2", "Class 3"],
-        data=[30, 45, 25],
+        values=[30, 45, 25],
         title="Example Pie Chart",
         palette="mako",
     )
 
     chart_3 = doughnut.create_doughnut_chart(
         labels=["Segment A", "Segment B", "Segment C"],
-        data=[40, 35, 25],
+        values=[40, 35, 25],
         title="Example Doughnut Chart",
         palette="rocket",
     )
 
-    context = {"chart_1": chart_1, "chart_2": chart_2, "chart_3": chart_3}
+    chart_4 = waterfall.create_waterfall_chart(
+        labels=["Start", "Increase 1", "Increase 2", "Decrease 1", "End"],
+        values=[100, 30, 10, -20, 120],
+        title="Example Waterfall Chart",
+        base_color="#888888",
+        increase_color="#4CAF50",
+        decrease_color="#F44336",
+    )
+
+    context = {
+        "chart_1": chart_1,
+        "chart_2": chart_2,
+        "chart_3": chart_3,
+        "chart_4": chart_4,
+    }
     return render(request, "show_chart.html", context)
