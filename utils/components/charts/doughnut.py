@@ -11,7 +11,7 @@ class DoughnutChart(Chart):
     """Data model describing a Chart.js doughnut chart."""
 
     labels: list[str]
-    data: list
+    values: list
     cutout_size: str | int = "50%"
 
     def to_dict(self) -> dict:
@@ -19,9 +19,11 @@ class DoughnutChart(Chart):
         options = super().to_dict()
 
         dataset = {
-            "data": self.data,
+            "data": self.values,
             "backgroundColor": resolve_palette_colors(
-                self.palette, len(self.data)
+                palette_name=self.palette,
+                num_colors=len(self.values),
+                alpha=1.0,
             ),
         }
 
@@ -37,7 +39,7 @@ class DoughnutChart(Chart):
 
 def create_doughnut_chart(
     labels: list[str],
-    data: list,
+    values: list,
     cutout_size: str | int = "50%",
     title: str | None = None,
     palette: str = "deep",
@@ -46,7 +48,7 @@ def create_doughnut_chart(
     """Helper function to create a DoughnutChart instance."""
     return DoughnutChart(
         labels=labels,
-        data=data,
+        values=values,
         cutout_size=cutout_size,
         title=title,
         palette=palette,

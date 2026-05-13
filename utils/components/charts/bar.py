@@ -15,7 +15,7 @@ class BarChartDataset:
     """Data model describing a dataset for a Chart.js bar chart."""
 
     label: str
-    data: list
+    values: list
     backgroundColor: str = None
     borderColor: str | list[str] | None = None
     borderWidth: int | None = None
@@ -24,7 +24,7 @@ class BarChartDataset:
         """Convert a BarChartData instance to a dictionary for use in Chart.js."""
         result = {
             "label": self.label,
-            "data": self.data,
+            "data": self.values,
         }
 
         if self.backgroundColor:
@@ -42,17 +42,17 @@ class BarChart(Chart):
     """Data model describing a Chart.js bar chart."""
 
     labels: list[str]
-    data: BarChartDataset | list[BarChartDataset]
+    values: BarChartDataset | list[BarChartDataset]
     orientation: Literal["vertical", "horizontal"] = "vertical"
     barmode: Literal["stack", "group", "relative"] = "stack"
 
     def __post_init__(self):
         super().__post_init__()
 
-        if isinstance(self.data, BarChartDataset):
-            self.data = [self.data]
+        if isinstance(self.values, BarChartDataset):
+            self.values = [self.values]
 
-        if not isinstance(self.data, list):
+        if not isinstance(self.values, list):
             raise TypeError(
                 "data must be a BarChartDataset or a list of BarChartDataset instances"
             )
@@ -60,11 +60,11 @@ class BarChart(Chart):
         if not self.labels:
             raise ValueError("labels must contain at least one value")
 
-        if not self.data:
+        if not self.values:
             raise ValueError("data must contain at least one dataset")
 
-        for dataset in self.data:
-            if len(dataset.data) != len(self.labels):
+        for dataset in self.values:
+            if len(dataset.values) != len(self.labels):
                 raise ValueError(
                     "Each dataset length must match the number of labels"
                 )
@@ -77,7 +77,7 @@ class BarChart(Chart):
         result.update({"type": "bar"})
 
         # get palette (default) colors
-        num_colors = len(self.data) if isinstance(self.data, list) else 1
+        num_colors = len(self.values) if isinstance(self.values, list) else 1
         default_colors = resolve_palette_colors(
             self.palette,
             num_colors=num_colors,
@@ -86,7 +86,9 @@ class BarChart(Chart):
 
         # apply default colors from palette if not specified in datasets
         data_list = (
-            [self.data] if isinstance(self.data, BarChartDataset) else self.data
+            [self.values]
+            if isinstance(self.values, BarChartDataset)
+            else self.values
         )
         datasets = []
 
@@ -94,7 +96,7 @@ class BarChart(Chart):
         if self.barmode == "relative":
             label_count = len(self.labels)
             for i in range(label_count):
-                total = sum(dataset.data[i] for dataset in data_list)
+                total = sum(dataset.values[i] for dataset in data_list)
                 relative_totals.append(total)
 
         for dataset in data_list:
@@ -173,7 +175,7 @@ class BarChart(Chart):
 def create_bar_chart(
     data: pd.DataFrame,
     label_col: str,
-    value_col: str | list[str],
+    value_cols: str | list[str],
     css_id: str | None = None,
     value_labels: str | list[str] | None = None,
     orientation: Literal["vertical", "horizontal"] = "vertical",
@@ -188,37 +190,37 @@ def create_bar_chart(
     options: dict | None = None,
 ) -> BarChart:
     """Create a BarChart instance from a pandas DataFrame."""
-    if isinstance(value_col, str):
-        value_col = [value_col]
-    elif not isinstance(value_col, list):
+    if isinstance(value_cols, str):
+        value_cols = [value_cols]
+    elif not isinstance(value_cols, list):
         raise TypeError("value_col must be a string or a list of strings")
 
     if value_labels is None:
-        value_labels = value_col
+        value_labels = value_cols
     elif isinstance(value_labels, str):
         value_labels = [value_labels]
     elif not isinstance(value_labels, list):
         raise TypeError("value_labels must be a string or a list of strings")
 
-    if len(value_labels) != len(value_col):
+    if len(value_labels) != len(value_cols):
         raise ValueError("value_labels must have the same length as value_col")
 
-    missing_columns = set([label_col] + value_col) - set(data.columns)
+    missing_columns = set([label_col] + value_cols) - set(data.columns)
     if missing_columns:
         raise KeyError(f"Missing DataFrame columns: {sorted(missing_columns)}")
 
     datasets = []
-    for col, label in zip(value_col, value_labels):
+    for col, label in zip(value_cols, value_labels):
         dataset = BarChartDataset(
             label=label,
-            data=data[col].tolist(),
+            values=data[col].tolist(),
         )
         datasets.append(dataset)
 
     return BarChart(
         css_id=css_id,
         labels=data[label_col].tolist(),
-        data=datasets,
+        values=datasets,
         orientation=orientation,
         barmode=barmode,
         title=title,

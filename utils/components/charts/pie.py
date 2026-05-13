@@ -11,16 +11,18 @@ class PieChart(Chart):
     """Data model describing a Chart.js pie chart."""
 
     labels: list[str]
-    data: list
+    values: list
 
     def to_dict(self) -> dict:
         """Convert a PieChart instance to a dictionary for use in Chart.js."""
         options = super().to_dict()
 
         dataset = {
-            "data": self.data,
+            "data": self.values,
             "backgroundColor": resolve_palette_colors(
-                self.palette, len(self.data)
+                palette_name=self.palette,
+                num_colors=len(self.values),
+                alpha=1.0,
             ),
         }
 
@@ -35,7 +37,7 @@ class PieChart(Chart):
 
 def create_pie_chart(
     labels: list[str],
-    data: list,
+    values: list,
     title: str | None = None,
     palette: str = "deep",
     options: dict | None = None,
@@ -43,7 +45,7 @@ def create_pie_chart(
     """Helper function to create a PieChart instance."""
     return PieChart(
         labels=labels,
-        data=data,
+        values=values,
         title=title,
         palette=palette,
         options=options,
