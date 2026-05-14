@@ -48,6 +48,73 @@ function _handleSpecialBarChartConfig(chartData) {
 }
 
 
+function createWaterfallChartLabel(context) {
+    const raw = context.raw;
+    const dataIndex = typeof context.dataIndex === 'number' ? context.dataIndex : -1;
+    const datasetLength =
+        context.chart?.data?.datasets?.[context.datasetIndex ?? 0]?.data?.length ??
+        0;
+    const isBoundary =
+        dataIndex === 0 || dataIndex === datasetLength - 1;
+
+    if (Array.isArray(raw) && raw.length === 2) {
+        const [start, end] = raw;
+        if (isBoundary) {
+            return `${end}`;
+        }
+
+        const diff = end - start;
+        const arrow = diff > 0 ? '↑' : diff < 0 ? '↓' : '→';
+        const sign = diff >= 0 ? '+' : '';
+        return `${start} ${arrow} ${end} (${sign}${diff})`;
+    }
+
+    if (raw && typeof raw === 'object') {
+        const yValue = raw.y ?? raw[1];
+        const xValue = raw.x ?? raw[0];
+        if (typeof yValue === 'number' && typeof xValue === 'number') {
+            if (isBoundary) {
+                return `${yValue}`;
+            }
+
+            const diff = yValue - xValue;
+            const arrow = diff > 0 ? '↑' : diff < 0 ? '↓' : '→';
+            const sign = diff >= 0 ? '+' : '';
+            return `${xValue} ${arrow} ${yValue} (${sign}${diff})`;
+        }
+    }
+
+    const parsed = context.parsed;
+    if (parsed != null) {
+        const numericValue =
+            typeof parsed === 'object' ? parsed.y ?? parsed.x : parsed;
+        return numericValue != null ? `${numericValue}` : '';
+    }
+
+    return '';
+}
+
+
+function _handleWaterfallChartConfig(chartData) {
+    const waterfallConfig = chartData?.options?.plugins?.waterfall_chart_utils;
+    if (!waterfallConfig) {
+        return chartData;
+    }
+
+    chartData.options = chartData.options || {};
+    chartData.options.plugins = chartData.options.plugins || {};
+    chartData.options.plugins.tooltip =
+        chartData.options.plugins.tooltip || {};
+    chartData.options.plugins.tooltip.callbacks =
+        chartData.options.plugins.tooltip.callbacks || {};
+
+    chartData.options.plugins.tooltip.callbacks.label =
+        createWaterfallChartLabel;
+
+    return chartData;
+}
+
+
 function renderChart(chart) {
     console.log('Rendering chart:', chart.id);
 
@@ -79,6 +146,12 @@ function renderChart(chart) {
     if (chart.type === 'bar') {
         console.log('Applying special bar chart configuration for chart:', chart.id);
         chartData = _handleSpecialBarChartConfig(chartData);
+    }
+
+    // waterfall chart - use custom tooltip label callback
+    if (chartData?.options?.plugins?.waterfall_chart_utils) {
+        console.log('Applying waterfall tooltip callback for chart:', chart.id);
+        chartData = _handleWaterfallChartConfig(chartData);
     }
 
     const chartInstance = new Chart(ctx, chartData);

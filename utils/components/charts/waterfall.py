@@ -26,7 +26,12 @@ class WaterfallChart(Chart):
                         "stacked": True,
                         "grid": {"display": False},
                     }
-                }
+                },
+                "plugins": {
+                    "waterfall_chart_utils": {
+                        "tooltip_label_callback": True,
+                    }
+                },
             }
         }
         chart_config = deep_merge_dicts(chart_config, waterfall_config)
@@ -55,11 +60,7 @@ class WaterfallChart(Chart):
                 color = (
                     self.increase_color if value >= 0 else self.decrease_color
                 )
-                data.append(
-                    [total, total + value]
-                    if value >= 0
-                    else [total + value, total]
-                )
+                data.append([total, total + value])
                 colors.append(hex_to_rgba(color, alpha=0.8))
                 total += value
         dataset = {
