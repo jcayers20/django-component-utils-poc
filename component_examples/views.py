@@ -154,7 +154,7 @@ def bar_chart_view(request):
 
     chart_3 = doughnut.create_doughnut_chart(
         labels=["Segment A", "Segment B", "Segment C"],
-        values=[40, 35, 25],
+        values=[45, 35, 25],
         title="Example Doughnut Chart",
         palette="rocket",
     )

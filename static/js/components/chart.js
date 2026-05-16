@@ -95,6 +95,32 @@ function createWaterfallChartLabel(context) {
 }
 
 
+function createCircularChartLabel(context) {
+    const value = Number(context.parsed);
+    if (!Number.isFinite(value)) {
+        return '';
+    }
+
+    const datasetValues = context.dataset?.data || [];
+    const total = datasetValues.reduce((sum, item) => {
+        const numericItem = Number(item);
+        return Number.isFinite(numericItem) ? sum + numericItem : sum;
+    }, 0);
+
+    if (total <= 0) {
+        return `${value}`;
+    }
+
+    const percentage = (value / total) * 100;
+    const roundedPercentage = Math.round(percentage * 10) / 10;
+    const percentageLabel = Number.isInteger(roundedPercentage)
+        ? `${roundedPercentage}`
+        : roundedPercentage.toFixed(1);
+
+    return `${value} (${percentageLabel}%)`;
+}
+
+
 function _handleWaterfallChartConfig(chartData) {
     const waterfallConfig = chartData?.options?.plugins?.waterfall_chart_utils;
     if (!waterfallConfig) {
@@ -110,6 +136,26 @@ function _handleWaterfallChartConfig(chartData) {
 
     chartData.options.plugins.tooltip.callbacks.label =
         createWaterfallChartLabel;
+
+    return chartData;
+}
+
+
+function _handleCircularChartConfig(chartData) {
+    const circularConfig = chartData?.options?.plugins?.circular_chart_utils;
+    if (!circularConfig?.tooltip_label_with_percentage) {
+        return chartData;
+    }
+
+    chartData.options = chartData.options || {};
+    chartData.options.plugins = chartData.options.plugins || {};
+    chartData.options.plugins.tooltip =
+        chartData.options.plugins.tooltip || {};
+    chartData.options.plugins.tooltip.callbacks =
+        chartData.options.plugins.tooltip.callbacks || {};
+
+    chartData.options.plugins.tooltip.callbacks.label =
+        createCircularChartLabel;
 
     return chartData;
 }
@@ -152,6 +198,11 @@ function renderChart(chart) {
     if (chartData?.options?.plugins?.waterfall_chart_utils) {
         console.log('Applying waterfall tooltip callback for chart:', chart.id);
         chartData = _handleWaterfallChartConfig(chartData);
+    }
+
+    if (chartData?.options?.plugins?.circular_chart_utils) {
+        console.log('Applying circular chart tooltip callback for chart:', chart.id);
+        chartData = _handleCircularChartConfig(chartData);
     }
 
     const chartInstance = new Chart(ctx, chartData);

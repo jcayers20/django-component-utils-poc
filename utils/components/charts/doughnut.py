@@ -32,7 +32,14 @@ class DoughnutChart(Chart):
             {
                 "type": "doughnut",
                 "data": {"labels": self.labels, "datasets": [dataset]},
-                "options": {"cutout": self.cutout_size},
+                "options": {
+                    "cutout": self.cutout_size,
+                    "plugins": {
+                        "circular_chart_utils": {
+                            "tooltip_label_with_percentage": True,
+                        }
+                    },
+                },
             },
         )
 

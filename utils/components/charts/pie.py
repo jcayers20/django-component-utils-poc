@@ -31,6 +31,13 @@ class PieChart(Chart):
             {
                 "type": "pie",
                 "data": {"labels": self.labels, "datasets": [dataset]},
+                "options": {
+                    "plugins": {
+                        "circular_chart_utils": {
+                            "tooltip_label_with_percentage": True,
+                        }
+                    }
+                },
             },
         )
 
